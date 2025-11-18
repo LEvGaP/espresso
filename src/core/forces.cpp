@@ -119,8 +119,10 @@ void init_forces_and_thermostat(System::System const &system) {
     // Apply Langevin noise if thermostat is active
     if (langevin_active) {
       auto const &langevin = *thermostat.langevin;
-      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN))
+      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN)) {
+        p.ve() += viscoelasticity_propagate(langevin, p, time_step, kT);
         p.force() += friction_thermo_langevin(langevin, p, time_step, kT);
+      }
 #ifdef ESPRESSO_ROTATION
       if (propagation.should_propagate_with(p, PropagationMode::ROT_LANGEVIN))
         p.torque() += convert_vector_body_to_space(

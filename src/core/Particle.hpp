@@ -336,6 +336,10 @@ struct ParticleMomentum {
   /** velocity. */
   Utils::Vector3d v = {0., 0., 0.};
 
+  /** viscoelasticity */
+  Utils::Vector3d ve = {0., 0., 0.};
+
+
 #ifdef ESPRESSO_ROTATION
   /** angular velocity.
    *  ALWAYS IN PARTICLE FIXED, I.E., CO-ROTATING COORDINATE SYSTEM.
@@ -436,6 +440,9 @@ public:
   auto &force() { return f.f; }
   auto const &force_and_torque() const { return f; }
   auto &force_and_torque() { return f; }
+
+  auto const &ve() const { return m.ve; } 
+  auto &ve() { return m.ve; }
 
   bool is_ghost() const { return l.ghost; }
   void set_ghost(bool const ghost_flag) { l.ghost = ghost_flag; }

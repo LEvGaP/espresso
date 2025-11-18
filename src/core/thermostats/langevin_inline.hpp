@@ -53,9 +53,34 @@ friction_thermo_langevin(LangevinThermostat const &langevin, Particle const &p,
 
   auto const friction_op = handle_particle_anisotropy(p, pref_friction);
   auto const noise_op = handle_particle_anisotropy(p, pref_noise);
-  return friction_op * p.v() +
+  return friction_op * p.v() + p.ve() +
          noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
+}
+
+inline Utils::Vector3d
+viscoelasticity_propagate(LangevinThermostat const &langevin, Particle const &p,
+                         double time_step, double kT) {
+  using namespace Thermostat;
+  // Determine prefactors for the friction and the noise term
+#ifdef ESPRESSO_THERMOSTAT_PER_PARTICLE
+  auto const gamma = handle_particle_gamma(p.gamma(), langevin.gamma);
+  auto const pref_noise = LangevinThermostat::sigma(kT, time_step, gamma);
+#else
+  auto const pref_noise = langevin.pref_noise;
+#endif // ESPRESSO_THERMOSTAT_PER_PARTICLE
+
+  auto const noise_op = handle_particle_anisotropy(p, pref_noise);
+
+  auto const K = 1.;
+  auto const zeta_m = 1.;
+  auto const tau_m = zeta_m / K;
+  auto const noise_m = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
+                        langevin.rng_counter(), langevin.rng_seed(), p.id());
+                        
+  auto const f_q = (1 / tau_m) * (p.ve() + zeta_m * p.v() - noise_m);
+
+  return 0.5 * time_step * f_q;
 }
 
 #ifdef ESPRESSO_ROTATION
