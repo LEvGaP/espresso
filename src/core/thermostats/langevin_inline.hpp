@@ -59,19 +59,21 @@ friction_thermo_langevin(LangevinThermostat const &langevin, Particle const &p,
 }
 
 inline Utils::Vector3d
-viscoelasticity_propagate(LangevinThermostat const &langevin, Particle const &p,
+retarded_friction_thermo_langeven(LangevinThermostat const &langevin, Particle const &p,
                          double time_step, double kT) {
   using namespace Thermostat;
-  auto const zeta_m = 1e-7;
-  auto const tau_m = 1e-4;
 
-  constexpr auto const temp_coeff = 2.0 * 12.0;
-  auto const noise_op = sqrt((temp_coeff * kT / time_step) * zeta_m);
+  auto const pref_friction = langevin.pref_retarded_friction;
+  auto const pref_noise = langevin.pref_noise_retarded;
+  auto const relax_time = langevin.relax_time;
 
-  auto const noise_m = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
+  auto const friction_op = handle_particle_anisotropy(p, pref_friction);
+  auto const noise_op = handle_particle_anisotropy(p, pref_noise);
+
+  auto const noise_force = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
                         
-  auto const f_q = -(p.ve() / tau_m + zeta_m * p.v() / tau_m - noise_m / tau_m);
+  auto const f_q = -(p.ve() + friction_op * p.v() - noise_force) / relax_time;
 
   return 0.5 * time_step * f_q;
 }

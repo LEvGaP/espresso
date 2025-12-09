@@ -145,6 +145,8 @@ public:
   void recalc_prefactors(double kT, double time_step) {
     pref_friction = -gamma;
     pref_noise = sigma(kT, time_step, gamma);
+    pref_retarded_friction = gamma_retarded;
+    pref_noise_retarded = sigma(kT, time_step, gamma_retarded);
 #ifdef ESPRESSO_ROTATION
     pref_noise_rotation = sigma(kT, time_step, gamma_rotation);
 #endif // ESPRESSO_ROTATION
@@ -163,7 +165,11 @@ public:
   /**@{*/
   /** Translational friction coefficient @f$ \gamma_{\text{trans}} @f$. */
   GammaType gamma = Thermostat::gamma_sentinel;
-#ifdef ESPRESSO_ROTATION
+  /** Retarded friction that imparts viscoelasticity to the medium */
+  GammaType gamma_retarded = Thermostat::gamma_sentinel;
+  /** Maxwell stress relaxation time */
+  double relax_time = 0.;
+  #ifdef ESPRESSO_ROTATION
   /** Rotational friction coefficient @f$ \gamma_{\text{rot}} @f$. */
   GammaType gamma_rotation = Thermostat::gamma_sentinel;
 #endif // ESPRESSO_ROTATION
@@ -174,10 +180,19 @@ public:
    *  Stores @f$ \gamma_{\text{trans}} @f$.
    */
   GammaType pref_friction = Thermostat::gamma_sentinel;
+  /**@{*/
+  /** Prefactor for the retarded friction.
+   */
+  GammaType pref_retarded_friction = Thermostat::gamma_sentinel;
+
   /** Prefactor for the translational velocity noise.
    *  Stores @f$ \sqrt{2 k_B T \gamma_{\text{trans}} / dt} / \sigma_\eta @f$.
    */
   GammaType pref_noise = Thermostat::gamma_sentinel;
+
+  /** Prefactor for the retarded velocity noise.
+   */
+  GammaType pref_noise_retarded = Thermostat::gamma_sentinel;
 #ifdef ESPRESSO_ROTATION
   /** Prefactor for the angular velocity noise.
    *  Stores @f$ \sqrt{2 k_B T \gamma_{\text{rot}} / dt} / \sigma_\eta @f$.
