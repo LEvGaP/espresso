@@ -323,6 +323,8 @@ public:
   Langevin() {
     add_parameters({
         make_autogamma(&CoreThermostat::gamma, "gamma"),
+        make_autogamma(&CoreThermostat::gamma_retarded, "gamma_retarded"),
+        make_autoparameter(&CoreThermostat::relax_time, "relax_time"),
 #ifdef ESPRESSO_ROTATION
         make_autogamma(&CoreThermostat::gamma_rotation, "gamma_rotation"),
 #endif

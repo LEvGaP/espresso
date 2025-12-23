@@ -190,7 +190,7 @@ public:
    */
   GammaType pref_noise = Thermostat::gamma_sentinel;
 
-  /** Prefactor for the retarded velocity noise.
+  /** Prefactor for the retarded force noise.
    */
   GammaType pref_noise_retarded = Thermostat::gamma_sentinel;
 #ifdef ESPRESSO_ROTATION

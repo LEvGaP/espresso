@@ -58,6 +58,12 @@ friction_thermo_langevin(LangevinThermostat const &langevin, Particle const &p,
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
 }
 
+/** Langevin thermostat for particle dissapative force.
+ *  @param[in]     langevin       Parameters
+ *  @param[in]     p              Particle
+ *  @param[in]     time_step      Time step
+ *  @param[in]     kT             Thermal energy
+ */
 inline Utils::Vector3d
 retarded_friction_thermo_langeven(LangevinThermostat const &langevin, Particle const &p,
                          double time_step, double kT) {
