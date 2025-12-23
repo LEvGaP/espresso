@@ -336,8 +336,8 @@ struct ParticleMomentum {
   /** velocity. */
   Utils::Vector3d v = {0., 0., 0.};
 
-  /** viscoelasticity */
-  Utils::Vector3d ve = {0., 0., 0.};
+  /** retarded force */
+  Utils::Vector3d retarded_f = {0., 0., 0.};
 
 
 #ifdef ESPRESSO_ROTATION
@@ -441,8 +441,8 @@ public:
   auto const &force_and_torque() const { return f; }
   auto &force_and_torque() { return f; }
 
-  auto const &ve() const { return m.ve; } 
-  auto &ve() { return m.ve; }
+  auto const &retarded_f() const { return m.retarded_f; } 
+  auto &retarded_f() { return m.retarded_f; }
 
   bool is_ghost() const { return l.ghost; }
   void set_ghost(bool const ghost_flag) { l.ghost = ghost_flag; }

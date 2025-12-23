@@ -53,7 +53,7 @@ friction_thermo_langevin(LangevinThermostat const &langevin, Particle const &p,
 
   auto const friction_op = handle_particle_anisotropy(p, pref_friction);
   auto const noise_op = handle_particle_anisotropy(p, pref_noise);
-  return friction_op * p.v() + p.ve() +
+  return friction_op * p.v() + p.retarded_f() +
          noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
 }
@@ -79,7 +79,7 @@ retarded_friction_thermo_langeven(LangevinThermostat const &langevin, Particle c
   auto const noise_force = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
                         
-  auto const f_q = -(p.ve() + friction_op * p.v() - noise_force) / relax_time;
+  auto const f_q = -(p.retarded_f() + friction_op * p.v() - noise_force) / relax_time;
 
   return 0.5 * time_step * f_q;
 }
