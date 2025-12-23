@@ -166,9 +166,9 @@ public:
   /** Translational friction coefficient @f$ \gamma_{\text{trans}} @f$. */
   GammaType gamma = Thermostat::gamma_sentinel;
   /** Retarded friction that imparts viscoelasticity to the medium */
-  GammaType gamma_retarded = Thermostat::gamma_sentinel;
+  double gamma_retarded = 0.;
   /** Maxwell stress relaxation time */
-  double relax_time = 0.;
+  double relax_time = 1e12;
   #ifdef ESPRESSO_ROTATION
   /** Rotational friction coefficient @f$ \gamma_{\text{rot}} @f$. */
   GammaType gamma_rotation = Thermostat::gamma_sentinel;
