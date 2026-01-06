@@ -107,6 +107,7 @@ endfunction()
 # Here: add new directory
 add_subdirectory(lennard_jones)
 add_subdirectory(error_analysis)
+add_subdirectory(jeffreys_fluid_sim)
 add_subdirectory(langevin_dynamics)
 add_subdirectory(charged_system)
 add_subdirectory(polymers)
