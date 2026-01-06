@@ -5,6 +5,7 @@
 # IDE
 .idea
 .vscode
+.env
 
 # Compiled python
 *.pyc
