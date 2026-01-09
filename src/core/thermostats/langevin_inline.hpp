@@ -76,12 +76,12 @@ retarded_friction_thermo_langeven(LangevinThermostat const &langevin, Particle c
   auto const friction_op = handle_particle_anisotropy(p, pref_friction);
   auto const noise_op = handle_particle_anisotropy(p, pref_noise);
 
-  auto const noise_force = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN>(
+  auto const noise_force = noise_op * Random::noise_uniform<RNGSalt::LANGEVIN_DELAYED>(
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
                         
   auto const f_q = -(p.retarded_f() + friction_op * p.v() - noise_force) / relax_time;
 
-  return 0.5 * time_step * f_q;
+  return time_step * f_q;
 }
 
 #ifdef ESPRESSO_ROTATION
