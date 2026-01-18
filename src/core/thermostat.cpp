@@ -44,6 +44,9 @@ void Thermostat::Thermostat::recalc_prefactors(double time_step) {
   if (langevin) {
     langevin->recalc_prefactors(kT, time_step);
   }
+  if (jeffreys_langevin) {
+    jeffreys_langevin->recalc_prefactors(kT, time_step);
+  }
   if (brownian) {
     brownian->recalc_prefactors(kT);
   }

@@ -120,7 +120,7 @@ void init_forces_and_thermostat(System::System const &system) {
     if (langevin_active) {
       auto const &langevin = *thermostat.langevin;
       if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN)) {
-        p.retarded_f() += retarded_friction_thermo_langeven(langevin, p, time_step, kT);
+        p.retarded_f() += retarded_friction_thermo_langevin(langevin, p, time_step, kT);
         p.force() += friction_thermo_langevin(langevin, p, time_step, kT);
       }
 #ifdef ESPRESSO_ROTATION
