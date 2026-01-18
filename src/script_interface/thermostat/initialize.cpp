@@ -27,6 +27,7 @@ namespace Thermostat {
 void initialize(Utils::Factory<ObjectHandle> *om) {
   om->register_new<Thermostat>("Thermostat::Thermostat");
   om->register_new<Langevin>("Thermostat::Langevin");
+  om->register_new<JeffreysLangevin>("Thermostat::JeffreysLangevin");
   om->register_new<Brownian>("Thermostat::Brownian");
 #ifdef ESPRESSO_NPT
   om->register_new<IsotropicNpt>("Thermostat::IsotropicNpt");

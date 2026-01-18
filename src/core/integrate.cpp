@@ -142,6 +142,8 @@ void Propagation::update_default_propagation(int thermo_switch) {
 #ifdef ESPRESSO_ROTATION
       default_propagation |= PropagationMode::ROT_LANGEVIN;
 #endif
+    } else if (thermo_switch & THERMO_JEFFREYS_LANGEVIN) {
+      default_propagation |= PropagationMode::JEFFREYS_LANGEVIN;
     } else if (thermo_switch & THERMO_LB) {
       default_propagation = PropagationMode::TRANS_LB_MOMENTUM_EXCHANGE;
 #ifdef ESPRESSO_ROTATION

@@ -67,6 +67,9 @@ void Thermostat::Thermostat::philox_counter_increment() {
   if (thermo_switch & THERMO_LANGEVIN) {
     langevin->rng_increment();
   }
+  if (thermo_switch & THERMO_JEFFREYS_LANGEVIN) {
+    jeffreys_langevin->rng_increment();
+  }
   if (thermo_switch & THERMO_BROWNIAN) {
     brownian->rng_increment();
   }

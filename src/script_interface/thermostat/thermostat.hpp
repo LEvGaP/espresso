@@ -323,8 +323,6 @@ public:
   Langevin() {
     add_parameters({
         make_autogamma(&CoreThermostat::gamma, "gamma"),
-        make_autogamma(&CoreThermostat::gamma_retarded, "gamma_retarded"),
-        make_autoparameter(&CoreThermostat::relax_time, "relax_time"),
 #ifdef ESPRESSO_ROTATION
         make_autogamma(&CoreThermostat::gamma_rotation, "gamma_rotation"),
 #endif
@@ -345,6 +343,34 @@ protected:
 #endif // ESPRESSO_ROTATION
     return params;
   }
+};
+
+class JeffreysLangevin : public Interface<::JeffreysLangevinThermostat> {
+  std::shared_ptr<CoreThermostat> &
+  get_member_handle(::Thermostat::Thermostat &thermostat) override {
+    return thermostat.jeffreys_langevin;
+  }
+
+  std::span<std::string_view const> get_required_parameters() const override {
+    static constexpr std::array names{std::string_view("gamma"),
+                                      std::string_view("gamma_retarded"),
+                                      std::string_view("relax_time")};
+    return names;
+  }
+
+public:
+  JeffreysLangevin() {
+    add_parameters({
+        make_autogamma(
+            static_cast<::Thermostat::GammaType JeffreysLangevinThermostat::*>(
+                &CoreThermostat::gamma),
+            "gamma"),
+        make_autogamma(&CoreThermostat::gamma_retarded, "gamma_retarded"),
+        make_autoparameter(&CoreThermostat::relax_time, "relax_time"),
+    });
+  }
+
+  ::ThermostatFlags get_thermo_flag() const final { return THERMO_JEFFREYS_LANGEVIN; }
 };
 
 class Brownian : public Interface<::BrownianThermostat> {
@@ -509,6 +535,7 @@ public:
 
 class Thermostat : public AutoParameters<Thermostat, System::Leaf> {
   std::shared_ptr<Langevin> langevin;
+  std::shared_ptr<JeffreysLangevin> jeffreys_langevin;
   std::shared_ptr<Brownian> brownian;
 #ifdef ESPRESSO_NPT
   std::shared_ptr<IsotropicNpt> npt_iso;
@@ -528,6 +555,7 @@ class Thermostat : public AutoParameters<Thermostat, System::Leaf> {
 
   template <typename Fun> void apply(Fun fun) {
     fun(*langevin);
+    fun(*jeffreys_langevin);
     fun(*brownian);
 #ifdef ESPRESSO_NPT
     fun(*npt_iso);
@@ -641,6 +669,7 @@ public:
                                        : Variant{None{}};
          }},
         make_autoparameter(&Thermostat::langevin, "langevin"),
+        make_autoparameter(&Thermostat::jeffreys_langevin, "jeffreys_langevin"),
         make_autoparameter(&Thermostat::brownian, "brownian"),
 #ifdef ESPRESSO_NPT
         make_autoparameter(&Thermostat::npt_iso, "npt_iso"),
@@ -668,6 +697,10 @@ public:
     }
     if (name == "set_langevin") {
       setup_thermostat(langevin, params);
+      return {};
+    }
+    if (name == "set_jeffreys_langevin") {
+      setup_thermostat(jeffreys_langevin, params);
       return {};
     }
     if (name == "set_brownian") {
@@ -764,6 +797,7 @@ private:
       set_parameter(name, Variant{context()->make_shared(so_name, {})});
     };
     make_thermostat("langevin", "Thermostat::Langevin");
+    make_thermostat("jeffreys_langevin", "Thermostat::JeffreysLangevin");
     make_thermostat("brownian", "Thermostat::Brownian");
 #ifdef ESPRESSO_NPT
     make_thermostat("npt_iso", "Thermostat::IsotropicNpt");

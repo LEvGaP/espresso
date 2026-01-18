@@ -62,4 +62,5 @@ enum ThermostatFlags : int {
   THERMO_SD = 1 << 4,
   THERMO_DPD = 1 << 5,
   THERMO_BOND = 1 << 6,
+  THERMO_JEFFREYS_LANGEVIN = 1 << 7,
 };
