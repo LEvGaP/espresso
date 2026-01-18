@@ -17,5 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-espresso_add_tutorial(TARGET tutorial_ld FILE "langevin_dynamics.ipynb"
+espresso_add_tutorial(TARGET tutorial_ld SUFFIX "1"  FILE "langevin_dynamics.ipynb"
+                      HTML_RUN)
+
+espresso_add_tutorial(TARGET tutorial_ld SUFFIX "2"  FILE "jeffreys_fluid_impl_check.ipynb"
                       HTML_RUN)

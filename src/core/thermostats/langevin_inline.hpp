@@ -58,27 +58,6 @@ friction_thermo_langevin(LangevinThermostat const &langevin, Particle const &p,
                         langevin.rng_counter(), langevin.rng_seed(), p.id());
 }
 
-/** Langevin thermostat for particle dissapative force.
- *  @param[in]     jeffreys_langevin       Parameters
- *  @param[in]     p              Particle
- *  @param[in]     time_step      Time step
- *  @param[in]     kT             Thermal energy
- */
-inline Utils::Vector3d
-retarded_friction_thermo_langevin(JeffreysLangevinThermostat const &jeffryes_langevin, Particle const &p,
-                         double time_step, double kT) {
-  using namespace Thermostat;
-
-  auto const pref_friction = jeffryes_langevin.pref_retarded_friction;
-  auto const pref_noise = jeffryes_langevin.pref_noise_retarded;
-
-  auto const friction_op = handle_particle_anisotropy(p, pref_friction);
-  auto const noise_op = handle_particle_anisotropy(p, pref_noise);
-  return friction_op * p.v() +
-         noise_op * Random::noise_uniform<RNGSalt::JEFFREYS_LANGEVIN>(
-                        jeffryes_langevin.rng_counter(), jeffryes_langevin.rng_seed(), p.id());
-}
-
 #ifdef ESPRESSO_ROTATION
 /** Langevin thermostat for particle angular velocities.
  *  @param[in]     langevin       Parameters

@@ -58,7 +58,7 @@ enum class RNGSalt : uint32_t {
   NPTISO_VOLUME,
   SALT_DPD,
   THERMALIZED_BOND,
-  JEFFREYS_LANGEVIN
+  JEFFREYS_LANGEVIN,
 };
 
 namespace Random {
