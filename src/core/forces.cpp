@@ -134,7 +134,7 @@ void init_forces_and_thermostat(System::System const &system) {
 
     if (jeffreys_langevin_active) {
       auto const &jeffryes_langevin = *thermostat.jeffreys_langevin;
-      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN))
+      if (propagation.should_propagate_with(p, PropagationMode::JEFFREYS_LANGEVIN))
         p.force() += friction_thermo_langevin(jeffryes_langevin, p, time_step, kT);
     }
   });
