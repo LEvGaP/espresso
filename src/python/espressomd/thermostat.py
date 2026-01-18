@@ -46,6 +46,27 @@ class Thermostat(ScriptInterfaceHelper):
             ``PARTICLE_ANISOTROPY`` is compiled in, then ``gamma`` can be a list
             of three positive floats, for the friction coefficient in each
             cardinal direction.
+        gamma_rotation : :obj:`float`, optional
+            The same applies to ``gamma_rotation``, which requires the feature
+            ``ROTATION`` to work properly. But also accepts three floats
+            if ``PARTICLE_ANISOTROPY`` is also compiled in.
+        seed : :obj:`int`
+            Initial counter value (or seed) of the philox RNG.
+            Required on first activation of the Langevin thermostat.
+            Must be positive.
+
+    set_jeffreys_langevin()
+        Set the JeffreysLangevin thermostat.
+
+        Parameters
+        -----------
+        kT : :obj:`float`
+            Thermal energy of the simulated heat bath.
+        gamma : :obj:`float`
+            Contains the friction coefficient of the bath. If the feature
+            ``PARTICLE_ANISOTROPY`` is compiled in, then ``gamma`` can be a list
+            of three positive floats, for the friction coefficient in each
+            cardinal direction.
         gamma_retarded : :obj:`float`
         relax_time : :obj:`float`
         gamma_rotation : :obj:`float`, optional
@@ -138,6 +159,7 @@ class Thermostat(ScriptInterfaceHelper):
     _so_creation_policy = "GLOBAL"
     _so_bind_methods = (
         "set_langevin",
+        "set_jeffreys_langevin",
         "set_brownian",
         "set_npt",
         "set_dpd",
@@ -152,6 +174,10 @@ class Langevin(ScriptInterfaceHelper):
     _so_name = "Thermostat::Langevin"
     _so_creation_policy = "GLOBAL"
 
+@script_interface_register
+class JeffreysLangevin(ScriptInterfaceHelper):
+    _so_name = "Thermostat::JeffreysLangevin"
+    _so_creation_policy = "GLOBAL"
 
 @script_interface_register
 class Brownian(ScriptInterfaceHelper):
