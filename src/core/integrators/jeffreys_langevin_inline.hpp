@@ -24,22 +24,12 @@
 #include "config/config.hpp"
 
 #include "thermostat.hpp"
-#include "thermostats/langevin_inline.hpp"
+#include "thermostats/jeffreys_langevin_inline.hpp"
 #include "velocity_verlet_inline.hpp"
-
-inline void retarded_force_propogator_half_step(
-    JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
-    double time_step, double kT) {
-  auto const thermo = retarded_friction_thermo_langevin(jeffreys_langevin, p, time_step, kT);
-  auto const relax_time = jeffreys_langevin.relax_time;
-  
-  p.retarded_f() += 0.5 * time_step * -(p.retarded_f() - thermo) / relax_time;
-}
 
 inline void jeffreys_langevin_propagator_1(
     JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
     double time_step, double kT) {
-  // p.force() += p.retarded_f();
   velocity_verlet_propagator_1(p, time_step);
   retarded_force_propogator_half_step(jeffreys_langevin, p, time_step, kT);
 }
@@ -47,7 +37,6 @@ inline void jeffreys_langevin_propagator_1(
 inline void jeffreys_langevin_propagator_2(
     JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
     double time_step, double kT) {
-  p.force() += p.retarded_f();
   velocity_verlet_propagator_2(p, time_step);
   retarded_force_propogator_half_step(jeffreys_langevin, p, time_step, kT);
 }
