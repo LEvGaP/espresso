@@ -50,6 +50,8 @@ bool is_valid_propagation_combination(int propagation) {
     return force_code_coverage(true);
   case TRANS_LANGEVIN:
     return force_code_coverage(true);
+  case JEFFREYS_LANGEVIN:
+    return force_code_coverage(true);
 #ifdef ESPRESSO_NPT
   case TRANS_LANGEVIN_NPT:
     return force_code_coverage(true);
@@ -119,6 +121,7 @@ std::unordered_map<std::string, int> propagation_flags_map() {
   enum_values["ROT_VS_RELATIVE"] = ROT_VS_RELATIVE;
   enum_values["ROT_BROWNIAN"] = ROT_BROWNIAN;
   enum_values["ROT_STOKESIAN"] = ROT_STOKESIAN;
+  enum_values["JEFFREYS_LANGEVIN"] = JEFFREYS_LANGEVIN;
   return enum_values;
 }
 

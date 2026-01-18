@@ -34,6 +34,7 @@
 #include "integrators/symplectic_euler_inline.hpp"
 #include "integrators/velocity_verlet_inline.hpp"
 #include "integrators/velocity_verlet_npt.hpp"
+#include "integrators/jeffreys_langevin_inline.hpp"
 
 #include "BoxGeometry.hpp"
 #include "ParticleRange.hpp"
@@ -375,6 +376,8 @@ static bool integrator_step_1(CellStructure &cell_structure,
       if (propagation.should_propagate_with(p, PropagationMode::ROT_LANGEVIN))
         velocity_verlet_rotator_1(p, time_step);
 #endif
+      if (propagation.should_propagate_with(p, PropagationMode::JEFFREYS_LANGEVIN))
+        jeffreys_langevin_propagator_1(*thermostat.jeffreys_langevin, p, time_step, kT);
     }
     if (propagation.should_propagate_with(p, PropagationMode::TRANS_BROWNIAN))
       brownian_dynamics_propagator(*thermostat.brownian, p, time_step, kT);
@@ -422,6 +425,8 @@ static void integrator_step_2(CellStructure &cell_structure,
   if (propagation.integ_switch == INTEG_METHOD_STEEPEST_DESCENT)
     return;
 
+  auto const &thermostat = *system.thermostat;
+  auto const kT = thermostat.kT;
   cell_structure.for_each_local_particle([&](Particle &p) {
 #ifdef ESPRESSO_VIRTUAL_SITES
     // virtual sites are updated later in the integration loop
@@ -460,6 +465,8 @@ static void integrator_step_2(CellStructure &cell_structure,
       if (propagation.should_propagate_with(p, PropagationMode::ROT_LANGEVIN))
         velocity_verlet_rotator_2(p, time_step);
 #endif
+      if (propagation.should_propagate_with(p, PropagationMode::JEFFREYS_LANGEVIN))
+        jeffreys_langevin_propagator_2(*thermostat.jeffreys_langevin, p, time_step, kT);
     }
   });
 

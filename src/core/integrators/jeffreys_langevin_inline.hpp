@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2010-2022 The ESPResSo project
+ * Copyright (C) 2002,2003,2004,2005,2006,2007,2008,2009,2010
+ *   Max-Planck-Institute for Polymer Research, Theory Group
+ *
+ * This file is part of ESPResSo.
+ *
+ * ESPResSo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ESPResSo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#pragma once
+
+#include "config/config.hpp"
+
+#include "thermostat.hpp"
+#include "thermostats/langevin_inline.hpp"
+#include "velocity_verlet_inline.hpp"
+
+inline void retarded_force_propogator_half_step(
+    JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
+    double time_step, double kT) {
+  auto const thermo = retarded_friction_thermo_langevin(jeffreys_langevin, p, time_step, kT);
+  auto const relax_time = jeffreys_langevin.relax_time;
+  
+  p.retarded_f() += 0.5 * time_step * -(p.retarded_f() - thermo) / relax_time;
+}
+
+inline void jeffreys_langevin_propagator_1(
+    JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
+    double time_step, double kT) {
+  p.force() += p.retarded_f();
+  velocity_verlet_propagator_1(p, time_step);
+  retarded_force_propogator_half_step(jeffreys_langevin, p, time_step, kT);
+}
+
+inline void jeffreys_langevin_propagator_2(
+    JeffreysLangevinThermostat const &jeffreys_langevin, Particle &p,
+    double time_step, double kT) {
+  p.force() += p.retarded_f();
+  velocity_verlet_propagator_2(p, time_step);
+  retarded_force_propogator_half_step(jeffreys_langevin, p, time_step, kT);
+}

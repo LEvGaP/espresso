@@ -111,6 +111,10 @@ void init_forces_and_thermostat(System::System const &system) {
       (propagation.used_propagations &
        (PropagationMode::TRANS_LANGEVIN | PropagationMode::ROT_LANGEVIN));
 
+  bool const jeffreys_langevin_active =
+      thermostat.jeffreys_langevin &&
+      (propagation.used_propagations & PropagationMode::JEFFREYS_LANGEVIN);
+
   // Single pass over all local particles
   cell_structure.for_each_local_particle([&](Particle &p) {
     // Initialize force with external forces
@@ -119,15 +123,19 @@ void init_forces_and_thermostat(System::System const &system) {
     // Apply Langevin noise if thermostat is active
     if (langevin_active) {
       auto const &langevin = *thermostat.langevin;
-      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN)) {
-        p.retarded_f() += retarded_friction_thermo_langevin(langevin, p, time_step, kT);
+      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN))
         p.force() += friction_thermo_langevin(langevin, p, time_step, kT);
-      }
 #ifdef ESPRESSO_ROTATION
       if (propagation.should_propagate_with(p, PropagationMode::ROT_LANGEVIN))
         p.torque() += convert_vector_body_to_space(
             p, friction_thermo_langevin_rotation(langevin, p, time_step, kT));
 #endif
+    }
+
+    if (jeffreys_langevin_active) {
+      auto const &jeffryes_langevin = *thermostat.jeffreys_langevin;
+      if (propagation.should_propagate_with(p, PropagationMode::TRANS_LANGEVIN))
+        p.force() += friction_thermo_langevin(jeffryes_langevin, p, time_step, kT);
     }
   });
 #ifdef ESPRESSO_SHARED_MEMORY_PARALLELISM
