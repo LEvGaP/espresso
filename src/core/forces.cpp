@@ -138,7 +138,7 @@ void init_forces_and_thermostat(System::System const &system) {
                                             PropagationMode::JEFFREYS_LANGEVIN))
         p.force() +=
             friction_thermo_langevin(jeffryes_langevin, p, time_step, kT) +
-            p.retarded_f();
+            p.retarded_force();
     }
   });
 #ifdef ESPRESSO_SHARED_MEMORY_PARALLELISM

@@ -337,7 +337,7 @@ struct ParticleMomentum {
   Utils::Vector3d v = {0., 0., 0.};
 
   /** retarded force */
-  Utils::Vector3d retarded_f = {0., 0., 0.};
+  Utils::Vector3d retarded_force = {0., 0., 0.};
 
 
 #ifdef ESPRESSO_ROTATION
@@ -441,8 +441,8 @@ public:
   auto const &force_and_torque() const { return f; }
   auto &force_and_torque() { return f; }
 
-  auto const &retarded_f() const { return m.retarded_f; } 
-  auto &retarded_f() { return m.retarded_f; }
+  auto const &retarded_force() const { return m.retarded_force; } 
+  auto &retarded_force() { return m.retarded_force; }
 
   bool is_ghost() const { return l.ghost; }
   void set_ghost(bool const ghost_flag) { l.ghost = ghost_flag; }

@@ -215,8 +215,8 @@ ParticleHandle::ParticleHandle() {
          set_particle_property(&Particle::v, value);
        },
        [this]() { return get_particle_data(m_pid).v(); }},
-      {"retarded_f", AutoParameter::read_only,
-        [this]() { return get_particle_data(m_pid).retarded_f(); }},
+      {"retarded_force", AutoParameter::read_only,
+        [this]() { return get_particle_data(m_pid).retarded_force(); }},
       {"f",
        [this](Variant const &value) {
          set_particle_property(&Particle::force, value);

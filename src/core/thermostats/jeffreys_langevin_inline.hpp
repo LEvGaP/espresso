@@ -59,6 +59,6 @@ inline void retarded_force_propogator_half_step(
       retarded_friction_thermo_langevin(jeffreys_langevin, p, time_step, kT);
   auto const relax_time = jeffreys_langevin.relax_time;
 
-  p.retarded_f() += 0.5 * time_step *
-                    -(p.retarded_f() - retarded_friction_thermo) / relax_time;
+  p.retarded_force() += 0.5 * time_step *
+                    -(p.retarded_force() - retarded_friction_thermo) / relax_time;
 }
