@@ -199,8 +199,8 @@ public:
    */
   void recalc_prefactors(double kT, double time_step) {
     LangevinThermostat::recalc_prefactors(kT, time_step);
-    pref_retarded_friction = gamma_retarded;
-    pref_noise_retarded = -sigma(kT, time_step, gamma_retarded);
+    pref_retarded_friction = -gamma_retarded;
+    pref_noise_retarded = sigma(kT, time_step, gamma_retarded);
   }
   /** @name Parameters */
   /**@{*/
