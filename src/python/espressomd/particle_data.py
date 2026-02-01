@@ -102,6 +102,13 @@ class ParticleHandle(ScriptInterfaceHelper):
         .. note::
            The velocity will be updated during integration.
 
+    retarded_force: (3,) array_like of :obj:`float`
+        The particle retarded force. 
+    
+        .. note::
+           The retarded force will be updated during integration.
+           Used to model viscoelastic media.
+
     f: (3,) array_like of :obj:`float`
         The instantaneous force acting on this particle.
 

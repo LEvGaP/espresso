@@ -67,12 +67,15 @@ class Thermostat(ScriptInterfaceHelper):
             ``PARTICLE_ANISOTROPY`` is compiled in, then ``gamma`` can be a list
             of three positive floats, for the friction coefficient in each
             cardinal direction.
-        gamma_retarded : :obj:`float`
-        relax_time : :obj:`float`
         gamma_rotation : :obj:`float`, optional
             The same applies to ``gamma_rotation``, which requires the feature
             ``ROTATION`` to work properly. But also accepts three floats
             if ``PARTICLE_ANISOTROPY`` is also compiled in.
+        gamma_retarded : :obj:`float`
+            Contains the retarded friction coefficient
+            that imparts viscoelasticity to the medium.
+        relax_time : :obj:`float`
+            The Maxwell stress relaxation time.
         seed : :obj:`int`
             Initial counter value (or seed) of the philox RNG.
             Required on first activation of the Langevin thermostat.
