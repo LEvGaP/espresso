@@ -58,3 +58,8 @@ class Propagation(enum.IntFlag):
     """Euler algorithm that integrates Brownian's equations of rotation."""
     ROT_STOKESIAN = 2**14
     """Euler algorithm that integrates Stokes' equations of rotation."""
+    JEFFREYS_LANGEVIN = 2**15
+    """
+    Velocity-Verlet algorithm that integrates Langevin's equations of motion
+    and also integrates equation of time-dependent dissapative force.
+    """

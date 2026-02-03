@@ -207,7 +207,7 @@ public:
   /** Retarded friction that imparts viscoelasticity to the medium */
   GammaType gamma_retarded = Thermostat::gamma_sentinel;
   /** Maxwell stress relaxation time */
-  double relax_time = {-1.0};
+  double relax_time = 1.0;
   /**@}*/
   /** @name Prefactors */
   /**@{*/
