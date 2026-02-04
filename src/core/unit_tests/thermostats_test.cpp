@@ -29,6 +29,7 @@
 #include "random_test.hpp"
 #include "thermostat.hpp"
 #include "thermostats/brownian_inline.hpp"
+#include "thermostats/jeffreys_langevin_inline.hpp"
 #include "thermostats/langevin_inline.hpp"
 #include "thermostats/npt_inline.hpp"
 
@@ -178,6 +179,58 @@ BOOST_AUTO_TEST_CASE(test_brownian_dynamics) {
     BOOST_CHECK_CLOSE(out[2], ref[2], tol);
   }
 #endif // ESPRESSO_ROTATION
+}
+
+JeffreysLangevinThermostat jeffreys_langevin_factory(double kT,
+                                                     double time_step) {
+  auto thermostat = thermostat_factory<JeffreysLangevinThermostat>(kT, time_step);
+  thermostat.gamma_retarded = 2.0 * thermostat.gamma;
+  thermostat.relax_time = 10.0;
+  thermostat.recalc_prefactors(kT, time_step);
+  return thermostat;
+}
+
+BOOST_AUTO_TEST_CASE(test_jeffreys_langevin_dynamics) {
+  constexpr double time_step = 0.1;
+  constexpr double kT = 3.0;
+  auto const jeffreys_langevin = jeffreys_langevin_factory(kT, time_step);
+  auto const prefactor_squared = 24.0 * kT / time_step;
+
+  /* check translational retarded friction and thermo */
+  {
+    auto p = particle_factory();
+    p.v() = {1.0, 2.0, 3.0};
+    auto const noise =
+        Random::noise_uniform<RNGSalt::JEFFREYS_LANGEVIN>(0, 0, 0);
+    auto const noise_pref = sqrt(prefactor_squared * jeffreys_langevin.gamma_retarded);
+    auto const ref = hadamard_product(-jeffreys_langevin.gamma_retarded, p.v()) +
+                     hadamard_product(noise_pref, noise);
+    auto const out =
+        retarded_friction_thermo_langevin(jeffreys_langevin, p, time_step, kT);
+    BOOST_CHECK_CLOSE(out[0], ref[0], tol);
+    BOOST_CHECK_CLOSE(out[1], ref[1], tol);
+    BOOST_CHECK_CLOSE(out[2], ref[2], tol);
+  }
+
+  /* check retarded force propagation */
+  {
+    auto p = particle_factory();
+    p.v() = {1.0, 2.0, 3.0};
+    Utils::Vector3d const retarded_force = {1.0, 2.0, 3.0};
+    p.retarded_force() = retarded_force;
+    auto const retarded_friction_thermo =
+        retarded_friction_thermo_langevin(jeffreys_langevin, p, time_step, kT);
+    auto const ref =
+        retarded_force - 0.5 * time_step *
+                             (retarded_force - retarded_friction_thermo) /
+                             jeffreys_langevin.relax_time;
+
+    retarded_force_propogator_half_step(jeffreys_langevin, p, time_step, kT);
+    auto const out = p.retarded_force();
+    BOOST_CHECK_CLOSE(out[0], ref[0], tol);
+    BOOST_CHECK_CLOSE(out[1], ref[1], tol);
+    BOOST_CHECK_CLOSE(out[2], ref[2], tol);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(test_langevin_dynamics) {
